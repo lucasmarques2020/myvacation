@@ -38,7 +38,7 @@ export default {
       const minutes = Math.floor((differ % (1000 * 60 * 60)) / (1000 * 60))
       const seconds = Math.floor((differ % (1000 * 60)) / 1000)
 
-      this.message = `${day} dias e ${hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+      this.message = `${day} dias e ${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
     },
     updateCount() {
       this.DateForVocation()
