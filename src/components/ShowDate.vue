@@ -1,7 +1,7 @@
 <template>
   <div class="greetings">
     <h1>
-      Faltam <span class="green">{{ message }}</span> segundos para as MINHAS
+      Faltam <span class="green">{{ message }}</span> para as MINHAS
       FÉRIAS!
     </h1>
     <img
