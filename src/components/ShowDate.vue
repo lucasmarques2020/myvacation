@@ -16,9 +16,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import bgVacation from '../assets/bg-vacation.webp'
 
 const message = ref('')
-let srcImage = ref('./src/assets/bg-vacation.webp')
+const srcImage = ref(bgVacation)
 const emit = defineEmits(['vacation-started'])
 let rafId = null
 
@@ -47,7 +48,7 @@ function updateMessage() {
 
   if(day < 5) {
     document.querySelector('body').classList.add('urgent');
-    srcImage = 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExOTU0MjZicnVvbHJybnQ1cDVqcGNkdHR4Z2t4dTFzZGdzN3psdGFidSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wuOtkQMVrqdRS/giphy.gif';
+    srcImage.value = 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExOTU0MjZicnVvbHJybnQ1cDVqcGNkdHR4Z2t4dTFzZGdzN3psdGFidSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wuOtkQMVrqdRS/giphy.gif';
   }
 
   rafId = requestAnimationFrame(updateMessage)
