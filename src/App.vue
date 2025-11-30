@@ -1,10 +1,21 @@
 <script setup>
+import { ref } from 'vue'
 import ShowDate from './components/ShowDate.vue'
+import SnowEffect from './components/SnowEffect.vue'
+import Slider from './components/Slider.vue'
+
+const showSlider = ref(false)
+
+function handleVacationStarted() {
+  showSlider.value = true
+}
 </script>
 
 <template>
+  <SnowEffect />
   <main>
-    <ShowDate />
+    <ShowDate v-if="!showSlider" @vacation-started="handleVacationStarted" />
+    <Slider v-else />
   </main>
 </template>
 

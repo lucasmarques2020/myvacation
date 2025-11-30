@@ -8,7 +8,7 @@
       class="bg-vaction"
       width="220"
       height="220"
-      src="../assets/bg-vacation.webp"
+      :src="srcImage"
       alt="Sol e Praia"
     />
   </div>
@@ -18,6 +18,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const message = ref('')
+let srcImage = ref('/src/assets/bg-vacation.webp')
+const emit = defineEmits(['vacation-started'])
 let rafId = null
 
 function updateMessage() {
@@ -35,7 +37,18 @@ function updateMessage() {
   const minutes = Math.floor((differ % (1000 * 60 * 60)) / (1000 * 60))
   const seconds = Math.floor((differ % (1000 * 60)) / 1000)
 
-  message.value = `${day} dias e ${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+  // Check if vacation has started (day <= 0)
+  if (day <= 0 && hour === 0 && minutes === 0 && seconds === 0) {
+    emit('vacation-started')
+    message.value = 'FÉRIAS COMEÇARAM! 🎉'
+  } else {
+    message.value = `${day} dias e ${hour < 10 ? '0' + hour : hour}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
+  }
+
+  if(day < 5) {
+    document.querySelector('body').classList.add('urgent');
+    srcImage = 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExOTU0MjZicnVvbHJybnQ1cDVqcGNkdHR4Z2t4dTFzZGdzN3psdGFidSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/wuOtkQMVrqdRS/giphy.gif';
+  }
 
   rafId = requestAnimationFrame(updateMessage)
 }
@@ -89,6 +102,29 @@ span {
     text-align: left;
     top: -10rem;
     font-size: 3.6rem;
+  }
+}
+
+.urgent {
+  span {
+    color: #a10000;
+    fill: white;
+    text-shadow: 0 0 5px rgb(255, 255, 255);
+  }
+  h1 {
+    color: #ff0101;
+    fill: white;
+    text-shadow: 0 0 5px rgb(255, 255, 255);
+    animation: infinite 1s pulse alternate;
+  }
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
   }
 }
 </style>
