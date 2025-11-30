@@ -18,7 +18,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const message = ref('')
-let srcImage = ref('/src/assets/bg-vacation.webp')
+let srcImage = ref('./src/assets/bg-vacation.webp')
 const emit = defineEmits(['vacation-started'])
 let rafId = null
 
