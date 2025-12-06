@@ -1,5 +1,5 @@
 <template>
-  <div class="greetings">
+  <div class="greetings" v-if="isLoaded">
     <h1>
       Faltam <span>{{ message }}</span> para as minhas
       <span>FÉRIAS!</span>
@@ -17,14 +17,48 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import bgVacation from '../assets/bg-vacation.webp'
+import confetti from 'canvas-confetti'
 
 const message = ref('')
 const srcImage = ref(bgVacation)
+const isLoaded = ref(false)
 const emit = defineEmits(['vacation-started'])
 let rafId = null
+let globalTime = null
+let hasTriggeredConfetti = false
+
+async function fetchGlobalTime() {
+  try {
+    const response = await fetch('https://worldtimeapi.org/api/timezone/America/Sao_Paulo')
+    const data = await response.json()
+    globalTime = new Date(data.datetime)
+  } catch (error) {
+    console.warn('Erro ao buscar hora global, usando hora local:', error)
+    globalTime = new Date()
+  }
+}
+
+function triggerConfetti() {
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+    gravity: 1,
+    decay: 0.95,
+  })
+  
+  // Trigger multiple confetti bursts for a better effect
+  setTimeout(() => {
+    confetti({
+      particleCount: 50,
+      spread: 100,
+      origin: { y: 0.6 },
+    })
+  }, 300)
+}
 
 function updateMessage() {
-  const now = new Date()
+  const now = globalTime || new Date()
   let vocation = new Date(now.getFullYear(), 11, 6)
 
   if (now > vocation) {
@@ -38,8 +72,14 @@ function updateMessage() {
   const minutes = Math.floor((differ % (1000 * 60 * 60)) / (1000 * 60))
   const seconds = Math.floor((differ % (1000 * 60)) / 1000)
 
-  // Check if vacation has started (day <= 0)
-  if (day <= 0 && hour === 0 && minutes === 0 && seconds === 0) {
+  // Check if vacation has started
+  const isVacationStarted = day <= 0 && hour === 0 && minutes === 0 && seconds === 0
+
+  if (isVacationStarted) {
+    if (!hasTriggeredConfetti) {
+      triggerConfetti()
+      hasTriggeredConfetti = true
+    }
     emit('vacation-started')
     message.value = 'FÉRIAS COMEÇARAM! 🎉'
   } else {
@@ -55,7 +95,10 @@ function updateMessage() {
 }
 
 onMounted(() => {
-  updateMessage()
+  fetchGlobalTime().then(() => {
+    isLoaded.value = true
+    updateMessage()
+  })
 })
 
 onUnmounted(() => {
