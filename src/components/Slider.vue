@@ -58,8 +58,8 @@ const slides = [
         image: 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmRuem1xZnpxaGM3N21lM3BsczJxODQ0bmRwcmIyamNlN2xmbmF2eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oriOb1AHvsIj24On6/giphy.gif'
     },
     {
-        title: '7: Ano novo em grande estilo e preparação para 2026 e volta ao trabalho',
-        description: 'Dunas infinitas e céus estrelados. Uma experiência mágica sob as estrelas do deserto.',
+        title: '7: Ano novo com estilo e volta ao trabalho',
+        description: 'Que boas vibrações venham para conquistas e sucesso em 2026!',
         image: 'https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHZ1OHludmE4dXh4eTdrMWZ2MmV2anh6ZTE0ZDN3MTU1dnN2amc0byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QMkPpxPDYY0fu/giphy.gif'
     }
 ]
