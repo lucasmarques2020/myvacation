@@ -25,16 +25,20 @@ const isLoaded = ref(false)
 const emit = defineEmits(['vacation-started'])
 let rafId = null
 let globalTime = null
+let localTimeAtFetch = null
 let hasTriggeredConfetti = false
+let vacationStartDate = null
 
 async function fetchGlobalTime() {
   try {
     const response = await fetch('https://worldtimeapi.org/api/timezone/America/Sao_Paulo')
     const data = await response.json()
     globalTime = new Date(data.datetime)
+    localTimeAtFetch = new Date()
   } catch (error) {
     console.warn('Erro ao buscar hora global, usando hora local:', error)
     globalTime = new Date()
+    localTimeAtFetch = new Date()
   }
 }
 
@@ -58,11 +62,37 @@ function triggerConfetti() {
 }
 
 function updateMessage() {
-  const now = globalTime || new Date()
-  let vocation = new Date(now.getFullYear(), 11, 6)
+  // Calcula a hora global atual baseado no offset da hora local
+  let now
+  if (globalTime && localTimeAtFetch) {
+    const offset = new Date() - localTimeAtFetch
+    now = new Date(globalTime.getTime() + offset)
+  } else {
+    now = new Date()
+  }
+  
+  // Se as férias já começaram, não recalcular a data
+  if (hasTriggeredConfetti && vacationStartDate) {
+    const now2 = new Date()
+    const timeInVacation = now2 - vacationStartDate
+    const days = Math.floor(timeInVacation / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((timeInVacation % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const mins = Math.floor((timeInVacation % (1000 * 60 * 60)) / (1000 * 60))
+    const secs = Math.floor((timeInVacation % (1000 * 60)) / 1000)
+    
+    message.value = `FÉRIAS! ${days}d ${hours < 10 ? '0' + hours : hours}:${mins < 10 ? '0' + mins : mins}:${secs < 10 ? '0' + secs : secs} 🎉`
+    rafId = requestAnimationFrame(updateMessage)
+    return
+  }
+  
+  // Define férias para 6 de dezembro 00:00:00 do ano CORRENTE
+  const currentYear = now.getFullYear()
+  let vocation = new Date(currentYear, 11, 6, 0, 0, 0)
 
-  if (now > vocation) {
-    vocation = new Date(now.getFullYear() + 1, 11, 6)
+  // Se já passou completamente o dia 6 de dezembro (passou para 7 de dezembro ou depois), próximas férias são no próximo ano
+  const vacationDay = new Date(currentYear, 11, 6, 23, 59, 59) // fim do dia 6
+  if (now > vacationDay) {
+    vocation = new Date(currentYear + 1, 11, 6, 0, 0, 0)
   }
 
   const differ = vocation - now
@@ -72,11 +102,12 @@ function updateMessage() {
   const minutes = Math.floor((differ % (1000 * 60 * 60)) / (1000 * 60))
   const seconds = Math.floor((differ % (1000 * 60)) / 1000)
 
-  // Check if vacation has started
-  const isVacationStarted = day <= 0 && hour === 0 && minutes === 0 && seconds === 0
+  // Check if vacation has started (reached or passed 6 de dezembro 00:00:00)
+  const isVacationStarted = differ <= 0 && now.getDate() === 6 && now.getMonth() === 11
 
   if (isVacationStarted) {
     if (!hasTriggeredConfetti) {
+      vacationStartDate = new Date()
       triggerConfetti()
       hasTriggeredConfetti = true
     }
